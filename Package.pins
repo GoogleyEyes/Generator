@@ -1,0 +1,24 @@
+{
+  "autoPin": true,
+  "pins": [
+    {
+      "package": "Discovery",
+      "reason": null,
+      "repositoryURL": "https://github.com/GoogleyEyes/Discovery.git",
+      "version": "0.0.1"
+    },
+    {
+      "package": "GoogleyEyesCore",
+      "reason": null,
+      "repositoryURL": "https://github.com/GoogleyEyes/Core.git",
+      "version": "0.0.2"
+    },
+    {
+      "package": "SwiftyJSON",
+      "reason": null,
+      "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON.git",
+      "version": "3.1.4"
+    }
+  ],
+  "version": 1
+}
