@@ -1,0 +1,61 @@
+service: CloudTranslate
+baseURL: https://translation.googleapis.com
+oauth-scopes:
+    cloudPlatform: https://www.googleapis.com/auth/cloud-platform
+model:
+    TranslateTextResponseTranslation:
+        detectedSourceLanguage: string?
+        model: enum? {
+            base
+            nmt
+        }
+        translatedText: string
+    TranslateTextResponseList:
+        translations: [TranslateTextResponseTranslation]
+    DetectLanguageResponse:
+        language: string
+        isReliable: bool
+        confidence: float
+    DetectLanguageResponseList:
+        detections: [[DetectLanguageResponse]]
+    GetSupportedLanguagesResponseLanguage:
+        language: string
+        name: string
+    GetSupportedLanguagesResponseList:
+        languages: [GetSupportedLanguagesResponseLanguage]
+methods:
+    translate:
+        POST /language/translate/v2
+        auth-scope: cloudPlatform
+        params:
+            query:  
+                query: string *REQ "q"
+                target: string *REQ
+                format: enum {
+                    html *
+                    text
+                }
+                source: string
+                model: enum {
+                    base
+                    nmt *
+                }
+                key: string -apikey
+        response:
+            data: TranslateTextResponseList
+    detect:
+        POST /language/translate/v2/detect
+        auth-scope: cloudPlatform
+        query:
+            query: string "q"
+            key: string -apikey
+        response:
+            data: DetectLanguageResponseList
+    languages:
+        GET /language/translate/v2/languages
+        auth-scope: cloudPlatform
+        query:
+            target: string
+            key: string -apikey
+        response:
+            data: GetSupportedLanguagesResponseList

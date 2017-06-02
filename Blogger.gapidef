@@ -1,0 +1,219 @@
+service: Blogger
+nameInURL: blogger
+version: v3
+standard-params:
+    query:
+        alt: enum { // Data format for the response.
+            json * // Responses with Content-Type of application/json
+        }
+        fields: string? // Selector specifying which fields to include in a partial response
+        key: string -apiKey // API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+        oauthToken "oauth-token": string -oauthToken // OAuth 2.0 token for the current user.
+        prettyPrint: bool = true // Returns response with indentations and line breaks.
+        quotaUser: string? // Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+        userIP "userIp": string? // IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+oauth-scopes:
+    blogger: https://www.googleapis.com/auth/blogger // Manage your Blogger account
+    readonly: https://www.googleapis.com/auth/blogger.readonly // View your Blogger account
+model:
+    Blog:
+        kind: string = "blogger#blog" // The kind of this entry. Always blogger#blog
+        id: string // The identifier for this resource.
+        name: string // The name of this blog. This is displayed as the title.
+        description: string // The description of this blog. This is displayed underneath the title.
+        published: datetime
+        updated: datetime
+        url: url
+        selfLink: string
+        posts:  // The container of posts in this blog.
+            totalNumberOfItems "totalItems": int // The count of posts in this blog.
+            selfLink: string // The URL of the container for posts in this blog.
+            items: [Post] // The List of Posts for this Blog.
+        pages: object // The container of pages in this blog.
+            totalNumberOfItems "totalItems": int // The count of pages in this blog.
+            selfLink: string // The URL of the container for pages in this blog.
+        locale: object // The locale this Blog is set to.
+            language: string // The language this blog is authored in.
+            country: string // The country this blog's locale is set to.
+            variant:  // The language variant this blog is authored in.
+        customMetaData: string // The JSON custom meta-data for the Blog
+    BlogList: -list
+        blogUserInfos: [BlogUserInfo] // Admin level list of blog per-user information
+        items: [Blog] // The list of Blogs this user has Authorship or Admin rights over
+        kind: string = "blogger#blogList" // documentation is implied from here on out
+    BlogPerUserInfo:
+        blogId: string 
+        hasAdminAccess: bool
+        kind: string = "blogger#blogPerUserInfo"
+        photosAlbumKey: string
+        role: string
+        userId: string
+    BlogUserInfo:
+        blog: Blog
+        blogUserInfo "blog_user_info": BlogPerUserInfo
+        kind: string = "blogger#blogUserInfo"
+    Comment:
+        author:
+            displayName: string
+            id: string
+            image:
+                url: string
+            url: string
+        blog:
+            id: string
+        content: string
+        id: string
+        inReplyTo:
+            id: string
+        kind: string = "blogger#comment"
+        post:
+            id: string
+        published: datetime
+        selfLink: string
+        status: string
+        updated: datetime
+    CommentList: -list
+        etag: string
+        items: [Comment]
+        kind: string = "blogger#commentList"
+        nextPageToken: string
+        prevPageToken: string
+    Page:
+        author:
+            displayName: string
+            id: string
+            image:
+                url: string
+            url: string
+        blog:
+            id: string
+        content: string
+        etag: string
+        id: string
+        kind: string = "blogger#page"
+        published: datetime
+        selfLink: string
+        status: string
+        title: string
+        updated: datetime
+        url: string
+    PageList: -list
+        etag: string
+        items: [Page]
+        kind: string = "blogger#pageList"
+        nextPageToken: string
+    Pageviews:
+        blogId: string
+        counts: array {
+            count: int64
+            timeRange: string
+        }
+        kind: string = "blogger#page_views"
+    Post:
+        author:
+            displayName: string
+            id: string
+            image:
+                url: string
+            url: string
+        blog:
+            id: string
+        content: string
+        customMetaData: string
+        etag: string
+        id: string
+        images: array {
+            url: string
+        }
+        kind: string = "blogger#post"
+        location:
+            latitude "lat": double
+            longitude "lng": double
+            name: string
+            span: string
+        published: datetime
+        readerComments: string
+        replies:
+            items: [Comment]
+            selfLink: string
+            totalItems: int64
+        selfLink: string
+        status: string
+        title: string
+        titleLink: string
+        updated: datetime
+        url: string
+    PostList: -list
+        etag: string
+        items: [Post]
+        kind: string = "blogger#postList"
+        nextPageToken: string
+    PostPerUserInfo:
+        blogId: string
+        hasEditAccess: bool
+        kind: string = "blogger#postPerUserInfo"
+        postId: string
+        userId: string
+    PostUserInfo:
+        kind: string = "blogger#postUserInfo"
+        post: Post
+        postUserInfo "post_user_info": PostPerUserInfo
+    PostUserInfosList:
+        items: [PostUserInfo]
+        kind: string = "blogger#postUserInfosList"
+        nextPageToken: string
+    User:
+        about: string
+        blogs:
+            selfLink: string
+        created: datetime
+        displayName: string
+        id: string
+        kind: string = "blogger#user"
+        locale:
+            country: string
+            language: string
+            variant: string
+        selfLink: string
+        url: string
+methods:
+    blogUserInfos:
+        get:
+            GET users/{userId}/blogs{blogId}
+            auth-scopes: blogger, readonly
+            params:
+                path:
+                    blogId: string *REQ
+                    userId: string *REQ
+                query:
+                    maxPosts: uint32
+            response: BlogUserInfo
+    blogs:
+        get:
+            GET blogs/{blogId}
+            auth-scopes: blogger, readonly
+            params:
+                path:
+                    blogId: string *REQ
+                query:
+                    maxPosts: uint32
+                    view: enum {
+                        admin "ADMIN"
+                        author "AUTHOR"
+                        reader "READER"
+                    }
+            response: Blog
+        getByUrl:
+            GET blogs/byurl
+            auth-scopes: blogger, readonly
+            params:
+                query:
+                    url: string *REQ
+                    view: enum {
+                        admin "ADMIN"
+                        author "AUTHOR"
+                        reader "READER"
+                    }
+            response: Blog
+        listByUser:
+            
